@@ -976,7 +976,7 @@ pre.json {
   color: var(--ink-2);
 }
 
-/* no typewriter font on subtitles or the line under a scenario title; ids keep it through .mono */
+/* no typewriter font on subtitles or the line under a scenario title. Ids keep it through .mono */
 .fig-head .unit,
 .scn-id {
   font-family: var(--font);
@@ -1001,7 +1001,7 @@ pre.json {
   min-width: 0;
 }
 
-/* numbers people read use the interface font with aligned digits; the typewriter font is kept for ids, symbols and equations */
+/* numbers people read use the interface font with aligned digits. The typewriter font is kept for ids, symbols and equations */
 .kpi .range,
 table.cmp small,
 td small,

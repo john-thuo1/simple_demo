@@ -12,7 +12,7 @@ const EXT = window.EXT = {};
   /* purpose families (GET /families): picker groups, the note under each headline, explainer context */
   const FAMILIES = API.listFamilies();
   /* A model can sit in more than one cluster: a cost-effectiveness or optimal-control model is an intervention model with a layer on top.
-     EXT.cluster is the cluster the user picked the current model from; the badge, the note and the explainer follow it. */
+     EXT.cluster is the cluster the user picked the current model from. The badge, the note and the explainer follow it. */
   EXT.cluster = null;
   const clustersOf = m => FAMILIES.filter(f => m && (m.purpose === f.id || (f.id === 'intervention' && (m.purpose === 'cost-effectiveness' || m.purpose === 'optimal-control'))));
   const famOf = m => { const cs = clustersOf(m); return (m === EXT.current && cs.find(f => f.id === EXT.cluster)) || cs[0] || FAMILIES[FAMILIES.length - 1]; };
@@ -39,7 +39,7 @@ const EXT = window.EXT = {};
   const teaching = m => !m.custom && m.kind !== 'team' && m.pkg.model.standing !== 'fitted';
   const mastText = () => CHOOSER() && !EXT.current ? 'Choose a model to begin.' : state.view === 'normal' ? 'Pick a reviewed model, then run and compare intervention scenarios on it.' : 'Pick a model from the library or open a package file, then run and compare intervention scenarios on it.';
   function hideChooser() { const app = $('#app'); if (app) app.classList.remove('no-model'); const c = $('#model-chooser'); if (c) c.hidden = true; const d = $('#btn-model-details'); if (d) d.hidden = false; const fl = $('#model-file-label'); if (fl) fl.hidden = state.view === 'normal'; $$('.view-switch button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === state.view))); const ms = $('#mast-sub'); if (ms) ms.textContent = mastText(); }
-  /* One card per model. Its clusters are tags on the card; a tag's description shows on hover. */
+  /* One card per model. Its clusters are tags on the card. A tag's description shows on hover. */
   function showChooser() {
     const app = $('#app'); app.classList.add('no-model'); const pm = state.view === 'normal';
     let host = $('#model-chooser'); if (!host) { host = el('section', { id: 'model-chooser', class: 'chooser', 'aria-label': 'Models' }); const tabs = $('.tabs'); tabs.parentNode.insertBefore(host, tabs); }
@@ -47,7 +47,7 @@ const EXT = window.EXT = {};
     $('#btn-model-details').hidden = true; const cr = $('.currency-row'); if (cr) cr.hidden = true; const fl = $('#model-file-label'); if (fl) fl.hidden = true;
     const ms = $('#mast-sub'); if (ms) ms.textContent = mastText();
     const grid = el('div', { class: 'chooser-grid' });
-    const list = EXT.models.filter(m => pm ? !m.custom : true); // the Policymaker sees every reviewed model; custom models and file import are for the Modeller
+    const list = EXT.models.filter(m => pm ? !m.custom : true); // the Policymaker sees every reviewed model. Custom models and file import are for the Modeller
     for (const m of list) {
       const bd = badgeOf(m); const card = el('article', { class: 'mcard' });
       card.append(el('div', { class: 'mcard-head' }, [el('h2', { text: m.name }), el('span', { class: 'badge ' + bd.cls, text: m.custom ? 'Custom · unreviewed' : teaching(m) ? 'Reviewed · teaching model' : 'Reviewed' })]));
@@ -82,7 +82,7 @@ const EXT = window.EXT = {};
     renderMenu();
   }
   /* The model menu: a listbox built from the select above (which stays the source of truth and still fires 'change').
-     A native select cannot show anything on hover, so the menu is drawn here; hovering or arrowing to a cluster shows its description. */
+     A native select cannot show anything on hover, so the menu is drawn here. Hovering or arrowing to a cluster shows its description. */
   function renderMenu() {
     const sel = $('#model-pick'); sel.hidden = true;
     let wrap = $('#model-menu-wrap');
@@ -127,7 +127,7 @@ const EXT = window.EXT = {};
       else if (ev.key === 'Tab') close(false);
     });
   }
-  /* one status chip in the toolbar; engine, cluster and ids open from it (and stay on the Model tab) */
+  /* one status chip in the toolbar. Engine, cluster and ids open from it (and stay on the Model tab) */
   const badgeOf = m => m.custom ? { cls: 'custom', short: 'Custom · unreviewed', full: 'custom · unreviewed · live runs only' }
     : m.kind === 'team' ? { cls: 'fitted', short: 'Reviewed', full: 'reviewed · team engine' }
     : { cls: m.pkg.model.standing === 'fitted' ? 'fitted' : 'illustrative', short: 'Reviewed', full: 'reviewed' + (m.pkg.model.standing === 'fitted' ? '' : ' · ' + m.pkg.model.standing) + ' · spec engine' };
@@ -144,12 +144,12 @@ const EXT = window.EXT = {};
     const chip = el('button', { type: 'button', class: 'badge chip ' + bd.cls, 'aria-describedby': 'model-pop', text: bd.short });
     const dl = el('dl');
     const row = (k, v, copy) => { const dd = el('dd', copy ? { class: 'mono' } : null, [el('span', { class: copy ? 'pick-all' : '', text: v })]); if (copy) { const cb = el('button', { type: 'button', class: 'pop-copy', text: 'Copy' }); cb.addEventListener('click', ev => { ev.stopPropagation(); copyText(v, cb); }); dd.append(cb); } dl.append(el('dt', { text: k }), dd); };
-    row('Status', m.custom ? 'Custom, unreviewed. Imported in this session; live runs only.' : 'Reviewed' + (m.reviewer ? ' by ' + m.reviewer : '') + (m.kind !== 'team' && m.pkg.model.standing !== 'fitted' ? ' · ' + m.pkg.model.standing : ''));
+    row('Status', m.custom ? 'Custom, unreviewed. Imported in this session, live runs only.' : 'Reviewed' + (m.reviewer ? ' by ' + m.reviewer : '') + (m.kind !== 'team' && m.pkg.model.standing !== 'fitted' ? ' · ' + m.pkg.model.standing : ''));
     row('Engine', m.kind === 'team' ? 'Team engine · the team\'s own model code' : 'Spec engine · runs the package compiled from the model text (DSL)');
     row('Cluster', f.name); dl.append(el('dt'), el('dd', { class: 'pop-desc', text: f.description }));
     if (!pm) { row('Model id', String(m.pkg.model_id), true); row('Structure id', String(m.structure_id), true); }
     pop.append(dl);
-    // shown on hover or keyboard focus (CSS); Escape dismisses until the pointer leaves
+    // shown on hover or keyboard focus (CSS). Escape dismisses until the pointer leaves
     b.onkeydown = ev => { if (ev.key === 'Escape') { b.classList.add('dismissed'); if (document.activeElement && b.contains(document.activeElement)) document.activeElement.blur(); } }; b.onmouseleave = () => b.classList.remove('dismissed');
     b.append(chip, pop);
   }
@@ -246,7 +246,7 @@ const EXT = window.EXT = {};
     c4.append(dl4); cols.append(c4);
     }
 
-    // 6 · Modeller: one parameter table. The CEMA model uses the team's registry (below, in the page); other models use what the package declares.
+    // 6 · Modeller: one parameter table. The CEMA model uses the team's registry (below, in the page). Other models use what the package declares.
     if (!pm && !team) {
       const c5 = card('Parameters', true);
       const tw = el('div', { class: 'table-wrap' }); const t = el('table', { class: 'tiers' }); t.append(el('thead', null, el('tr', null, ['Parameter', 'Symbol', 'Tier', 'Default', 'Unit', 'Range', 'Source'].map(h => el('th', { text: h })))));
@@ -312,7 +312,7 @@ const EXT = window.EXT = {};
   }
   function packageJSON(entry) { return entry && entry.package ? JSON.stringify(entry.package, null, 2) : ''; }
 
-  /* Open a package file: POST /models. Only compiled packages are accepted; model text is the service's business. */
+  /* Open a package file: POST /models. Only compiled packages are accepted. Model text is the service's business. */
   function openText(text, what) {
     let json; try { json = JSON.parse(text); } catch (err) { alertNote('Could not read ' + what + ': not a JSON package.'); return; }
     let summary; try { summary = API.importPackage(json, 'opened from ' + what); } catch (err) { alertNote('Could not open ' + what + ': ' + err.message); return; }
@@ -401,7 +401,7 @@ const EXT = window.EXT = {};
   document.addEventListener('submit', ev => { const box = ev.target.closest && ev.target.closest('.fig.ask'); if (!box || box.closest('#panel-gbuild')) return; const q = ($('#ask-input') || {}).value || ''; showAskPrecheck(box, q); }, true);
   document.addEventListener('click', ev => { const chip = ev.target.closest && ev.target.closest('.fig.ask .qchip'); if (!chip || chip.closest('#panel-gbuild')) return; showAskPrecheck(chip.closest('.fig.ask'), chip.textContent); }, true);
   function showAskPrecheck(box, q) { if (!q) return; const c = CLS.pre(q); state.askPrecheck = { q, c }; paintAskPrecheck(box); }
-  function paintAskPrecheck(box) { if (!state.askPrecheck) return; let host = box.querySelector('.ask-precheck'); if (!host) { host = el('div', { class: 'ask-precheck', style: 'margin-top:8px' }); const st = box.querySelector('.ask-status'); if (st) st.before(host); else box.append(host); } host.innerHTML = ''; } // the classifier still runs; its reading is not shown (18 Nov 2026)
+  function paintAskPrecheck(box) { if (!state.askPrecheck) return; let host = box.querySelector('.ask-precheck'); if (!host) { host = el('div', { class: 'ask-precheck', style: 'margin-top:8px' }); const st = box.querySelector('.ask-status'); if (st) st.before(host); else box.append(host); } host.innerHTML = ''; } // the classifier still runs. Its reading is not shown (18 Nov 2026)
   const _renderAskBox = window.renderAskBox;
   window.renderAskBox = function (host) { _renderAskBox(host); const box = host.querySelector('.fig.ask'); if (box) { paintAskPrecheck(box); } };
   /* composer output check (team path): the spec is structured, so grounding is verified field by field */
@@ -417,7 +417,7 @@ const EXT = window.EXT = {};
   };
   EXT.renderSpecChecks = function (rows, title) { const box = el('div', { class: 'checks', style: 'margin-top:8px' }, [el('div', { class: 'title', text: title || 'Composer output · validated against the catalogue before drawing' })]); rows.forEach(r => box.append(el('div', { class: 'row', style: 'grid-template-columns:minmax(0,1fr) auto' }, [el('span', null, [el('span', { text: r.label }), el('span', { class: 'muted', text: ' · ' + r.detail })]), el('span', { class: 'badge ' + (r.pass ? 'ok' : 'warn'), text: r.pass ? 'pass' : 'rejected' })]))); const n = rows.filter(r => !r.pass).length; box.append(el('div', { class: 'small', text: n ? n + ' check(s) failed: the chart is not drawn and the reason is shown instead.' : 'All checks passed. The chart is drawn from the engine\'s numbers.' })); return box; };
   const _renderAskedCharts = window.renderAskedCharts;
-  window.renderAskedCharts = function (host, startN) { _renderAskedCharts(host, startN); for (const item of state.asked) { const sec = host.querySelector('#fig-asked-' + item.id); if (!sec || sec.querySelector('.checks')) continue; const rows = EXT.specChecks(item.spec, item.made, MSE.GRAMMAR.measures, state.scenarios.filter(scenarioReady).map(x => x.id), ['scenario', 'county', 'severity', 'year']); void rows; } }; // the checks still run; the checklist is not shown
+  window.renderAskedCharts = function (host, startN) { _renderAskedCharts(host, startN); for (const item of state.asked) { const sec = host.querySelector('#fig-asked-' + item.id); if (!sec || sec.querySelector('.checks')) continue; const rows = EXT.specChecks(item.spec, item.made, MSE.GRAMMAR.measures, state.scenarios.filter(scenarioReady).map(x => x.id), ['scenario', 'county', 'severity', 'year']); void rows; } }; // the checks still run. The checklist is not shown
 
   /* ===================== GENERIC EXPLORER (spec engine) ===================== */
   const G = EXT.G = { pkg: null, compiled: null, entry: null, scenarios: [], activeId: 'A', referenceId: 'A', results: new Map(), hasRun: false, dirty: false, live: true, figGroup: 'results', asked: [], askedSeq: 0, explainerOpen: {}, sweepKey: null, modeCounts: { cache: 0, grid: 0, live: 0, emulator: 0 }, savedQuestions: [] };
@@ -531,7 +531,7 @@ const EXT = window.EXT = {};
   G.renderKPIs = function (ctx) {
     const r = ctx.res, host = $('#g-kpis'); host.innerHTML = ''; const o0 = G.pkg.observables[0], S = r.summary[o0.id]; const bc = S.base.median || 1;
     host.append(kpi(o0.label + ', ' + ctx.w.label, fmt.compact(S.value.median), '90% range ' + fmt.compact(S.value.q05) + ' – ' + fmt.compact(S.value.q95), 'baseline ' + fmt.compact(S.base.median) + ' · per 1,000 people', null, [S.value.q05 / (bc * 1.3), S.value.q95 / (bc * 1.3), S.value.median / (bc * 1.3)]));
-    host.append(kpi('Averted vs baseline', (S.averted.median >= 0 ? '' : '−') + fmt.compact(Math.abs(S.averted.median)), '90% range ' + fmt.compact(S.averted.q05) + ' – ' + fmt.compact(S.averted.q95), fmt.signedPct(-S.avertedPct.median, 0) + ' · lower in ' + S.below + '/' + S.n + ' draws', S.avertedPct.median > 0 ? 'good' : S.avertedPct.median < 0 ? 'bad' : '', [Math.max(0, S.avertedPct.q05), Math.max(0, S.avertedPct.q95), Math.max(0, S.avertedPct.median)]));
+    host.append(S.averted.median < 0 ? kpi('More than baseline', fmt.compact(-S.averted.median), '90% range ' + fmt.compact(-S.averted.q95) + ' – ' + fmt.compact(-S.averted.q05), fmt.signedPct(-S.avertedPct.median, 1) + ' · lower in ' + S.below + '/' + S.n + ' draws', 'bad', null) : kpi('Averted vs baseline', fmt.compact(S.averted.median), '90% range ' + fmt.compact(S.averted.q05) + ' – ' + fmt.compact(S.averted.q95), fmt.signedPct(-S.avertedPct.median, 1) + ' · lower in ' + S.below + '/' + S.n + ' draws', S.avertedPct.median > 0 ? 'good' : S.avertedPct.median < 0 ? 'bad' : '', [Math.max(0, S.avertedPct.q05), Math.max(0, S.avertedPct.q95), Math.max(0, S.avertedPct.median)]));
     host.append(kpi('Peak month', fmt.compact(r.peak.value), G.pkg.model.start >= 2000 ? fmt.ym(r.peak.t) : 'year ' + r.peak.t.toFixed(2), 'highest monthly ' + o0.label.toLowerCase() + ' in the charted window', null, null));
     G.pkg.observables.slice(1, 4).forEach(o => { const Q = r.summary[o.id]; const isShare = o.unit === 'proportion'; host.append(kpi(o.label + (o.kind === 'flow' ? ', ' + ctx.w.label : ', mean'), isShare ? fmt.pct(Q.value.median, 1) : fmt.compact(Q.value.median), 'baseline ' + (isShare ? fmt.pct(Q.base.median, 1) : fmt.compact(Q.base.median)), o.kind === 'flow' ? fmt.signedPct(-Q.avertedPct.median, 0) + ' vs baseline' : (o.unit || ''), o.kind === 'flow' ? (Q.avertedPct.median > 0 ? 'good' : Q.avertedPct.median < 0 ? 'bad' : '') : null, null)); });
   };
@@ -543,7 +543,7 @@ const EXT = window.EXT = {};
     const tb = el('tbody'); const o0 = G.pkg.observables[0];
     for (const o of all) { const tr = el('tr'); if (o.s.id === G.activeId) tr.classList.add('active'); const sw = el('span', { class: 'sw' }); sw.style.background = G.color(o.s); const nameTd = el('td'); nameTd.append(sw, document.createTextNode(o.s.id + ' · ' + G.name(o.s))); if (state.view !== 'normal') nameTd.append(el('small', { text: o.res.scenario_id })); const diffs = G.differences(o.s, ref.s); tr.append(nameTd, el('td', { text: o === ref ? 'Reference' : (diffs.length ? diffs.join(' · ') : 'Identical inputs') }));
       obs.forEach(ob => { const Q = o.res.summary[ob.id]; const isShare = ob.unit === 'proportion'; const td = el('td', { class: 'num', text: isShare ? fmt.pct(Q.value.median, 1) : fmt.int(Q.value.median) }); td.append(el('small', { text: isShare ? fmt.pct(Q.value.q05, 1) + ' to ' + fmt.pct(Q.value.q95, 1) : fmt.int(Q.value.q05) + ' to ' + fmt.int(Q.value.q95) })); tr.append(td); });
-      const a = o.res.summary[o0.id].value.median, b = ref.res.summary[o0.id].value.median; tr.append(el('td', { class: 'num', text: o === ref ? '—' : fmt.signedPct(b ? (a - b) / b : 0, 0) }));
+      const a = o.res.summary[o0.id].value.median, b = ref.res.summary[o0.id].value.median; tr.append(el('td', { class: 'num', text: o === ref ? '—' : fmt.signedPct(b ? (a - b) / b : 0, 1) }));
       const c3 = el('td', { class: 'num', text: fmt.int(o.res.peak.value) }); c3.append(el('small', { text: G.pkg.model.start >= 2000 ? fmt.ym(o.res.peak.t) : 'yr ' + o.res.peak.t.toFixed(2) })); tr.append(c3);
       tb.append(tr); }
     t.append(tb); wrap.append(t); host.append(wrap);
@@ -580,12 +580,12 @@ const EXT = window.EXT = {};
     const r = ctx.res, pkg = G.pkg, o0 = pkg.observables[0], S = r.summary[o0.id]; const t = q.toLowerCase();
     if (/assum/.test(t)) return 'The model assumes: ' + (pkg.assumptions.join(' ') || 'nothing is declared explicitly') + ' Structurally it has ' + pkg.compartments.length + ' compartments and ' + pkg.flows.length + ' flows, and holds ' + pkg.params.filter(p => p.tier === 'fixed').length + ' parameters fixed.';
     if (/uncertain|band|sure|confiden/.test(t)) { const vl = variedList(ctx); return vl.length ? 'The band comes from ' + vl.length + ' parameters the model marks as varied (' + vl.map(x => x[0] + ' ' + x[1]).join(' · ') + '), sampled ' + MSE.N_DRAWS + ' times. ' + o0.label + ' over ' + ctx.w.label + ' range from ' + fmt.int(S.value.q05) + ' to ' + fmt.int(S.value.q95) + ' per 1,000 (median ' + fmt.int(S.value.median) + '). ' + (G.entry.custom ? 'These ranges were typed by the model author and are not a fit to data.' : 'The ranges are the model\'s declared ranges.') : 'This model declares no varied parameters, so no band is shown: the line is the model at its stated values.'; }
-    if (/why|change|fall|rise|differ|driv/.test(t)) { const ch = Object.keys(ctx.s.overrides); if (!ch.length) return 'Nothing has been changed from the baseline in scenario ' + ctx.s.id + ', so the lines coincide. ' + o0.label + ' over ' + ctx.w.label + ' are ' + fmt.int(S.value.median) + ' per 1,000. Move a lever to create a difference.'; return 'Compared with the baseline, ' + o0.label.toLowerCase() + ' over ' + ctx.w.label + ' go from ' + fmt.int(S.base.median) + ' to ' + fmt.int(S.value.median) + ' per 1,000 (' + fmt.signedPct(-S.avertedPct.median, 0) + '). The inputs that differ are ' + ch.map(id => { const p = pkg.params.find(x => x.id === id); return p ? (p.label || id).toLowerCase() : id; }).join(', ') + '. Each enters the rate expressions directly: ' + ch.map(id => { const fl = pkg.flows.filter(f => M.identsOf(f.expr).includes(id) || pkg.funcs.some(fn => M.identsOf(fn.expr).includes(id) && M.identsOf(f.expr).includes(fn.id))); return id + ' → ' + (fl.length ? fl.map(f => f.from + '→' + f.to).join(', ') : 'the model'); }).join(' · ') + '. The scenario is lower than the baseline in ' + S.below + ' of ' + S.n + ' paired draws.'; }
+    if (/why|change|fall|rise|differ|driv/.test(t)) { const ch = Object.keys(ctx.s.overrides); if (!ch.length) return 'Nothing has been changed from the baseline in scenario ' + ctx.s.id + ', so the lines coincide. ' + o0.label + ' over ' + ctx.w.label + ' are ' + fmt.int(S.value.median) + ' per 1,000. Move a lever to create a difference.'; return 'Compared with the baseline, ' + o0.label.toLowerCase() + ' over ' + ctx.w.label + ' go from ' + fmt.int(S.base.median) + ' to ' + fmt.int(S.value.median) + ' per 1,000 (' + fmt.signedPct(-S.avertedPct.median, 1) + '). The inputs that differ are ' + ch.map(id => { const p = pkg.params.find(x => x.id === id); return p ? (p.label || id).toLowerCase() : id; }).join(', ') + '. Each enters the rate expressions directly: ' + ch.map(id => { const fl = pkg.flows.filter(f => M.identsOf(f.expr).includes(id) || pkg.funcs.some(fn => M.identsOf(fn.expr).includes(id) && M.identsOf(f.expr).includes(fn.id))); return id + ' → ' + (fl.length ? fl.map(f => f.from + '→' + f.to).join(', ') : 'the model'); }).join(' · ') + '. The scenario is lower than the baseline in ' + S.below + ' of ' + S.n + ' paired draws.'; }
     if (/message|main|summar|built|how was/.test(t)) return F.measures + ' For scenario ' + ctx.s.id + ': ' + o0.label.toLowerCase() + ' over ' + ctx.w.label + ' median ' + fmt.int(S.value.median) + ' per 1,000 against a baseline of ' + fmt.int(S.base.median) + '.';
     return null;
   }
   function makeFig(spec) { return Object.assign({ views: ['normal', 'researcher'], questions: ['Why do the lines differ?', 'How uncertain is this?', 'What does the model assume here?'], context(ctx) { return gBaseContext(ctx, this.title, this.measures); }, prepared(q, ctx) { return preparedGeneric(q, ctx, this); }, aside(ctx) { return gAside(ctx, { measures: this.measures, varied: true }); } }, spec); }
-  /* The chart catalogue. Every chart declares what it needs from the model package; a chart is shown when its
+  /* The chart catalogue. Every chart declares what it needs from the model package. A chart is shown when its
      requirements are met, listed with the reason when they are not. The composer draws on the same catalogue. */
   G.catalogue = function () {
     const pkg = G.pkg; const flows = pkg.observables.filter(o => o.kind === 'flow'), shares = pkg.observables.filter(o => o.kind !== 'flow'); const camps = pkg.params.filter(p => p.campaign);
@@ -616,7 +616,7 @@ const EXT = window.EXT = {};
       data(ctx) { const r = ctx.res, w = ctx.w; const idx = r.t.map((t, k) => k).filter(k => r.t[k] >= w.chartFrom && r.t[k] < w.end); return mkData(idx.map(k => xLabelFor()(r.t[k])), [{ name: 'Baseline', values: idx.map(k => r.bseries[o0.id].median[k]) }].concat(sameSetScenarios(ctx).map(o => ({ name: 'Scenario ' + o.s.id, values: idx.map(k => o.res.series[o0.id].median[k]) })))); },
       questions: ['Why do ' + o0.label.toLowerCase() + ' change in this scenario?', 'How uncertain is this?', 'What does this model assume?'] }));
     if (flows.length) F.push(makeFig({ group: 'results', id: 'totals', title: o0.label + ' over ' + 'the window, by scenario', unit: 'per 1,000 people · total over the planning window · medians with 90% range', measures: 'Total ' + o0.label.toLowerCase() + ' per 1,000 people over the window for every scenario, with the change against the reference scenario.',
-      render(chartEl, ctx) { const all = ctx.all.filter(o => G.charted().includes(o.s) || o.s === ctx.s); const ref = all.find(o => o.s.id === G.referenceId) || all[0]; const cats = all.map(o => { const S = o.res.summary[o0.id]; const rv = ref.res.summary[o0.id].value.median; return { label: [o.s.id, G.name(o.s).slice(0, 22)], value: S.value.median, color: G.color(o.s), note: o === ref ? 'reference' : fmt.signedPct(rv ? (S.value.median - rv) / rv : 0, 0), noteColor: o === ref ? 'var(--muted)' : (S.value.median < rv ? 'var(--good-text)' : 'var(--crit)'), tipNote: '90% range ' + fmt.int(S.value.q05) + ' – ' + fmt.int(S.value.q95) }; }); barChart(chartEl, { categories: cats, height: 230, labelRows: true, noteRow: true, valueName: o0.label, aria: this.title }); },
+      render(chartEl, ctx) { const all = ctx.all.filter(o => G.charted().includes(o.s) || o.s === ctx.s); const ref = all.find(o => o.s.id === G.referenceId) || all[0]; const cats = all.map(o => { const S = o.res.summary[o0.id]; const rv = ref.res.summary[o0.id].value.median; return { label: [o.s.id, G.name(o.s).slice(0, 22)], value: S.value.median, color: G.color(o.s), note: o === ref ? 'reference' : fmt.signedPct(rv ? (S.value.median - rv) / rv : 0, 1), noteColor: o === ref ? 'var(--muted)' : (S.value.median < rv ? 'var(--good-text)' : 'var(--crit)'), tipNote: '90% range ' + fmt.int(S.value.q05) + ' – ' + fmt.int(S.value.q95) }; }); barChart(chartEl, { categories: cats, height: 230, labelRows: true, noteRow: true, valueName: o0.label, aria: this.title }); },
       data(ctx) { return mkData(ctx.all.map(o => o.s.id), [{ name: o0.label, values: ctx.all.map(o => o.res.summary[o0.id].value.median) }, { name: 'q05', values: ctx.all.map(o => o.res.summary[o0.id].value.q05) }, { name: 'q95', values: ctx.all.map(o => o.res.summary[o0.id].value.q95) }]); }, aside(ctx) { return gAside(ctx, { measures: this.measures, varied: false }); } }));
     flows.slice(1).forEach(o => F.push(makeFig({ group: 'results', id: 'obs-' + o.id, title: 'Monthly ' + o.label.toLowerCase() + ' by scenario', unit: (o.unit || 'per 1,000 people per month') + ' · flow ' + o.flow.replace(/->/g, ' → '), measures: o.label + ' per month per 1,000 people (the flow ' + o.flow.replace(/->/g, ' → ') + '), by scenario, against the baseline.',
       render(chartEl, ctx) { const r = ctx.res, w = ctx.w; const series = [{ name: 'Baseline', color: 'var(--muted)', values: r.bseries[o.id].median, dash: '5 4', width: 1.5 }]; for (const x of sameSetScenarios(ctx)) { const isA = x.s.id === ctx.s.id; series.push({ name: 'Scenario ' + x.s.id, color: G.color(x.s), values: x.res.series[o.id].median, width: isA ? 2.2 : 1.6, bands: isA ? bandsOf(x.res.series[o.id], null, x.res.execution.computedMode, x.res.execution.approxError) : null, endLabel: x.s.id }); } lineChart(chartEl, { x: r.t, xDomain: [w.chartFrom, w.end], series, height: 220, endLabels: true, markers: markersOf(r), yTitle: 'per 1,000 / month', xTicks: xTicksFor(w), xLabel: xLabelFor(), aria: this.title }); chartEl.append(legend(series.map(s => ({ name: s.name, color: s.color, kind: s.dash ? 'dash' : 'line' })))); },
@@ -814,7 +814,7 @@ const EXT = window.EXT = {};
     host.append(el('p', { class: 'prose', text: 'The active scenario\'s levers (' + (Object.keys(a.overrides).map(id => { const p = G.pkg.params.find(x => x.id === id); return p ? (p.label || id).toLowerCase() : id; }).join(', ') || 'none changed: baseline') + ') applied to each of the ' + G.pkg.sets.length + ' parameter sets the model declares, each compared with its own baseline. Central runs. Per 1,000 people over ' + w.label + '.' }));
     const rows = G.pkg.sets.map((st, k) => { const s2 = Object.assign(G.blank('_' + st.id), { set: st.id, overrides: clone(a.overrides), pins: clone(a.pins), horizon: a.horizon }); const res = G.execute(s2); const S = res.summary[o0.id]; return { st, res, S, color: MSE.SLOT_COLORS[k % 8] }; });
     const card = el('div', { class: 'card' }); card.append(el('h2', { text: o0.label + ' over ' + w.label + ' by setting, scenario vs its baseline' })); const ch = el('div', { class: 'chart' }); card.append(ch);
-    barChart(ch, { categories: rows.map(r => ({ label: r.st.id, value: r.S.value.median, color: 'var(--s1)', note: fmt.signedPct(r.S.base.median ? (r.S.value.median - r.S.base.median) / r.S.base.median : 0, 0), noteColor: r.S.value.median < r.S.base.median ? 'var(--good-text)' : 'var(--crit)', tipNote: 'baseline ' + fmt.int(r.S.base.median) })), height: 240, noteRow: true, valueName: o0.label, aria: 'By setting' });
+    barChart(ch, { categories: rows.map(r => ({ label: r.st.id, value: r.S.value.median, color: 'var(--s1)', note: fmt.signedPct(r.S.base.median ? (r.S.value.median - r.S.base.median) / r.S.base.median : 0,1), noteColor: r.S.value.median < r.S.base.median ? 'var(--good-text)' : 'var(--crit)', tipNote: 'baseline ' + fmt.int(r.S.base.median) })), height: 240, noteRow: true, valueName: o0.label, aria: 'By setting' });
     card.append(legend([{ name: 'Scenario (note: change vs the setting\'s own baseline)', color: 'var(--s1)', kind: 'box' }])); host.append(card);
     const grid = el('div', { class: 'uc-grid', style: 'margin-top:14px' });
     rows.forEach(r => { const c = el('div', { class: 'uc' }); c.append(el('h3', null, [el('span', { text: r.st.id }), el('small', { text: Object.keys(r.st.values).map(k => k + ' ' + r.st.values[k]).join(' · ') })])); const chh = el('div', { class: 'chart' }); c.append(chh); lineChart(chh, { x: r.res.t, xDomain: [w.chartFrom, w.end], series: [{ name: 'Baseline', color: 'var(--muted)', values: r.res.bseries[o0.id].central, dash: '5 4', width: 1.4 }, { name: 'Scenario', color: r.color, values: r.res.series[o0.id].central, width: 1.8 }], height: 150, marginLeft: 44, xTicks: xTicksFor(w), xLabel: xLabelFor(), aria: r.st.id }); c.append(legend([{ name: 'Baseline', color: 'var(--muted)', kind: 'dash' }, { name: 'Scenario', color: r.color, kind: 'line' }])); const open = el('button', { type: 'button', class: 'btn small open', text: 'Open in builder' }); open.addEventListener('click', () => { a.set = r.st.id; G.renderRail(); switchTab('gbuild'); G.runAll(); }); c.append(open); grid.append(c); });

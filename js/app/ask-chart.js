@@ -169,7 +169,7 @@ function composeChart(container, spec) {
   if (spec.measure === 'cost') return composeCostChart(container, spec, lo, hi);
   if (spec.by === 'severity') return composeSeverity(container, spec, lo, hi);
   const ents = entities(spec); if (!ents.length) { container.textContent = 'No scenario or county matched.'; return null; }
-  const isShare = M.kind === 'share'; const fmtY = spec.transform === 'pct_baseline' || isShare ? (v => fmt.pct(v, isShare && spec.transform !== 'pct_baseline' ? 1 : 0)) : fmt.compact;
+  const isShare = M.kind === 'share'; const fmtY = spec.transform === 'pct_baseline' || isShare ? (v => fmt.pct(v, 1)) : fmt.compact;
   const tipFmt = spec.transform === 'pct_baseline' || isShare ? (v => fmt.pct(v, 1)) : fmt.int;
   if (spec.form === 'line' || spec.by === 'year') {
     if (spec.by === 'year') {

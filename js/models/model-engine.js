@@ -91,7 +91,7 @@
 
   /* ---------- compile: package → right-hand side ---------- */
   function compileExpr(expr, ctx) {
-    // ctx: {comp:Set, par:Set, funcs:Map(id→expr)}; produces JS source that reads X[], P{}, t, year
+    // ctx: {comp:Set, par:Set, funcs:Map(id→expr)}. Produces JS source that reads X[], P{}, t, year
     const ids = identsOf(expr);
     for (const id of ids) if (!(ctx.comp.has(id) || ctx.par.has(id) || ctx.funcs.has(id) || id in BUILTINS || id === 't' || id === 'year' || id === 'N')) throw new Error('undefined symbol ' + id);
     if (!/^[\sA-Za-z0-9_+\-*/().,]*$/.test(expr.replace(/\*\*/g, '^').replace(/\^/g, ''))) throw new Error('unsupported characters in expression');
@@ -136,7 +136,7 @@
     return cf.coverage * cf.peak * Math.exp(-(cf.decay || 0) * (year - last));
   }
 
-  /* ---------- run: RK4 over the horizon; monthly outputs ---------- */
+  /* ---------- run: RK4 over the horizon. Monthly outputs ---------- */
   function run(pkg, compiled, opts) {
     // opts: { overrides:{id:value|campaignFields}, set:name|null, startYear, endYear, dt(days) }
     const P = {}; for (const p of pkg.params) P[p.id] = p.campaign ? Object.assign({}, p.campaign) : p.value;

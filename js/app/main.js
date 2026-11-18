@@ -61,7 +61,7 @@ init();
       if (!r.offsetParent) continue; // hidden tab
       const top = Math.max(r.getBoundingClientRect().top, 10);
       r.style.maxHeight = Math.max(240, window.innerHeight - top - 10) + 'px';
-      // while the panel has more than fits, the wheel stays with it at either end; the page does not start moving instead
+      // while the panel has more than fits, the wheel stays with it at either end. The page does not start moving instead
       r.classList.toggle('scrolls', r.scrollHeight > r.clientHeight + 1);
     }
   }

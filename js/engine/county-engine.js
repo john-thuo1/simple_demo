@@ -10,8 +10,8 @@
   const MODEL_VERSION = 'cema-county-standin/0.3';
   const ENGINE_VERSION = 'browser-euler/0.3';
 
-  // ---- Product catalogue (illustrative; shaped after the 2 Oct efficacy figure) ----
-  // peak: protective efficacy right after a campaign; k: decay per year (exp(-k t)).
+  // ---- Product catalogue (illustrative, shaped after the 2 Oct efficacy figure) ----
+  // peak: protective efficacy right after a campaign. k: decay per year (exp(-k t)).
   const PRODUCTS = {
     pyrethroid:  { label: 'Pyrethroid-only', short: 'Pyrethroid', peak: 0.16, k: 0.80, cost: 2.1, note: 'standard net. Reduced by pyrethroid resistance' },
     pyrethroid_hist: { label: 'Pyrethroid-only (before resistance)', short: 'Pyrethroid (pre-2024)', peak: 0.40, k: 0.75, cost: 2.1, note: 'historical campaigns 2012–2021', hidden: true },

@@ -13,7 +13,7 @@ MSE.COUNTIES = [
 ];
 MSE.COUNTIES.forEach(c => { c.country = 'KE'; c.currency = 'KES'; });
 MSE.GROUPS = { itn: 'ITN-only county', itn_irs: 'ITN + IRS county' };
-// Money: unit costs are stored in USD; display converts with indicative rates (editable in researcher view).
+// Money: unit costs are stored in USD. Display converts with indicative rates (editable in researcher view).
 MSE.CURRENCIES = {
   KES: { name: 'Kenyan shilling', symbol: 'KSh', perUSD: 129 },
   USD: { name: 'US dollar', symbol: '$', perUSD: 1 },
@@ -35,7 +35,7 @@ MSE.RANGE_TEXT = { itnEff: '×' + E.RANGES.itnEff[0].toFixed(2) + '–' + E.RANG
 // Grid steps for the precomputed-results path (what the router checks)
 MSE.GRID = { access: 0.10, usage: 0.10, irsCoverage: 0.10, pt: 0.10, cv: 0.10, campaignYear: [2027, 2028, 2029], interval: [2, 3, 4], horizon: [2030, 2032, 2035] };
 
-// Illustrative unit costs (USD). Editable in researcher view; placeholders until the team's costing data are available.
+// Illustrative unit costs (USD). Editable in researcher view. Placeholders until the team's costing data are available.
 MSE.COSTS = { treatedCase: 3.5, netDelivery: 1.0, netsPerPerson: 0.56, irsPerPerson: 5.5, vaccinePerChild: 15 };
 
 MSE.ADV_FIELDS = [
@@ -134,8 +134,8 @@ MSE.FIG_GROUPS = [
   { id: 'asked', label: 'Your questions', q: 'Charts composed from your own questions, over the model\'s outputs' },
   { id: 'all', label: 'All charts', q: 'Everything on one page' },
 ];
-/* Start screen (18 Nov 2026). true: the tool opens with no model selected and shows the list of models to choose from;
-   the Policymaker sees every reviewed model but not "Open a model file". false: the previous behaviour, the CEMA county
+/* Start screen (18 Nov 2026). true: the tool opens with no model selected and shows the list of models to choose from.
+   The Policymaker sees every reviewed model but not "Open a model file". false: the previous behaviour, the CEMA county
    model is preselected. This one switch turns the whole feature on or off. */
 MSE.START_WITH_CHOOSER = true;
 MSE.VIEW_HELP = {

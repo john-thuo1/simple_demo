@@ -13,7 +13,7 @@ function renderUseCase() {
     const series = runs.map((o, k) => ({ name: o.p.label, color: MSE.SLOT_COLORS[k], values: o.run.treated, width: k === 0 ? 1.6 : 1.8, dash: k === 0 ? '5 4' : null }));
     lineChart(ch, { x: t, xDomain: [2024, h + 1], series, height: 150, marginLeft: 44, markers: [{ x: 2027, label: '2027' }], aria: c.name + ' monthly cases by strategy' });
     const base = cumulative(runs[0].run, t, 'treated', 2027, h + 1);
-    const cats = runs.map((o, k) => { const v = cumulative(o.run, t, 'treated', 2027, h + 1); return { label: o.p.label.split(' · ')[0], value: v, color: MSE.SLOT_COLORS[k], note: k ? fmt.signedPct(v / base - 1, 0) : null, noteColor: 'var(--good-text)', tipNote: o.p.label }; });
+    const cats = runs.map((o, k) => { const v = cumulative(o.run, t, 'treated', 2027, h + 1); return { label: o.p.label.split(' · ')[0], value: v, color: MSE.SLOT_COLORS[k], note: k ? fmt.signedPct(v / base - 1, 1) : null, noteColor: 'var(--good-text)', tipNote: o.p.label }; });
     barChart(bars, { categories: cats, height: 150, marginLeft: 44, noteRow: true, maxBar: 24, valueName: 'Cases 2027–2032', aria: c.name + ' total cases by strategy' });
     const open = el('button', { type: 'button', class: 'btn small open', text: 'Open in builder' }); open.addEventListener('click', () => { state.scenarios = set.map((p, k) => newScenario('ABCDEFGH'[k], defaultInputs(c, { product: p.product, irsMode: p.irsMode, horizon: h }), p.label)); state.activeId = 'B'; state.referenceId = 'A'; state.hasRun = true; syncCurrency(); switchTab('build'); renderRail(); runAll(); window.scrollTo({ top: 0 }); }); card.append(open);
   }

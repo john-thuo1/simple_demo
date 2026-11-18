@@ -3,7 +3,7 @@
      GET  /families                    → the four model clusters (name, description, strength, limitation)
      GET  /models/{id}                 → the package: structure, parameters + annotations, sets, observables, validation
      GET  /models/{id}/inputs          → the user-facing input form derived from the package (levers, tiers, sets, outputs)
-     POST /models                      → import a package file (custom model: unreviewed, live runs only; same_structure_as names a library model with the same structure)
+     POST /models                      → import a package file (custom model: unreviewed, live runs only. same_structure_as names a library model with the same structure)
      POST /scenarios                   → {model_id, parameter_set, overrides, pins, horizon, mode} → mse-result (served by the scenario service below)
 
    Library packages were compiled from the team's model text by the service and are kept as one file each in js/models/library/. */
@@ -26,10 +26,10 @@
   ];
   const fnv = str => { let h = 0x811c9dc5; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return ('00000000' + h.toString(16)).slice(-8); };
   const squash = x => String(x == null ? '' : x).replace(/\s+/g, '');
-  /* Identity in three parts. structure_id covers compartments, flows, functions and which parameters exist;
-     values_id covers defaults and parameter sets; annotations (labels, tiers, ranges) are in neither.
+  /* Identity in three parts. structure_id covers compartments, flows, functions and which parameters exist.
+     values_id covers defaults and parameter sets. Annotations (labels, tiers, ranges) are in neither.
      A change of values therefore keeps the structure_id: same model, different numbers.
-     Prototype hash: still sensitive to names and order; the model service's will not be. */
+     Prototype hash: still sensitive to names and order. The model service's will not be. */
   const structureId = P => fnv(JSON.stringify({ c: (P.compartments || []).map(c => [c.id, c.group || '', !!c.absorbing]), f: (P.flows || []).map(f => [f.from, f.to, squash(f.rate)]), fn: (P.functions || []).map(f => [f.id, squash(f.expr)]), p: (P.parameters || []).map(p => [p.id, p.type]) }));
   const valuesId = P => fnv(JSON.stringify({ d: (P.parameters || []).map(p => [p.id, p.default]), s: P.parameter_sets || [] }));
   /* purpose is computed from the layers a package carries, not assigned by hand */

@@ -64,7 +64,7 @@ function renderKPIs(ctx) {
   const S = ctx.res.summary, h = ctx.inputs.horizon; const host = $('#kpis'); host.innerHTML = '';
   const bc = S.baseCases.median;
   host.append(kpi('Outpatient-treated cases, 2027–' + h, fmt.compact(S.cases.median), '90% range ' + fmt.compact(S.cases.q05) + ' – ' + fmt.compact(S.cases.q95), 'baseline ' + fmt.compact(bc), null, [S.cases.q05 / (bc * 1.3), S.cases.q95 / (bc * 1.3), S.cases.median / (bc * 1.3)]));
-  host.append(kpi('Cases averted vs baseline', (S.averted.median >= 0 ? '' : '−') + fmt.compact(Math.abs(S.averted.median)), '90% range ' + fmt.compact(S.averted.q05) + ' – ' + fmt.compact(S.averted.q95), fmt.signedPct(-S.avertedPct.median, 0) + ' cases', S.avertedPct.median > 0 ? 'good' : 'bad', [Math.max(0, S.avertedPct.q05), Math.max(0, S.avertedPct.q95), Math.max(0, S.avertedPct.median)]));
+  host.append(S.averted.median < 0 ? kpi('More cases than baseline', fmt.compact(-S.averted.median), '90% range ' + fmt.compact(-S.averted.q95) + ' – ' + fmt.compact(-S.averted.q05), fmt.signedPct(-S.avertedPct.median, 1) + ' cases', 'bad', null) : kpi('Cases averted vs baseline', fmt.compact(S.averted.median), '90% range ' + fmt.compact(S.averted.q05) + ' – ' + fmt.compact(S.averted.q95), fmt.signedPct(-S.avertedPct.median, 1) + ' cases', S.avertedPct.median > 0 ? 'good' : 'bad', [Math.max(0, S.avertedPct.q05), Math.max(0, S.avertedPct.q95), Math.max(0, S.avertedPct.median)]));
   host.append(kpi('Peak month', fmt.compact(S.peak.value), fmt.ym(S.peak.t), 'highest monthly cases, 2024–' + h, null, null));
   host.append(kpi('Share infected in ' + h, fmt.pct(S.prevEnd, 1), 'baseline ' + fmt.pct(S.bprevEnd, 1), 'mean over the year, all infections', null, null));
   host.append(kpi('Cost 2027–' + h + ' (illustrative)', fmt.money(S.costs.total), 'baseline ' + fmt.money(S.bcosts.total) + ' · ' + state.currency, S.costPerAverted == null ? 'no cases averted' : S.costPerAverted < 0 ? 'averts cases and costs less' : fmt.moneyUnit(S.costPerAverted) + ' per case averted', null, null));
@@ -83,7 +83,7 @@ function renderComparison() {
     const diffs = differences(o.s, ref.s);
     tr.append(nameTd, el('td', { text: o === ref ? 'Reference' : (diffs.length ? diffs.join(' · ') : 'Identical inputs') }));
     const c1 = el('td', { class: 'num', text: fmt.int(S.cases.median) }); c1.append(el('small', { text: fmt.int(S.cases.q05) + ' to ' + fmt.int(S.cases.q95) })); tr.append(c1);
-    const c2 = el('td', { class: 'num', text: fmt.int(S.averted.median) + ' (' + fmt.pct(S.avertedPct.median, 0) + ')' }); c2.append(el('small', { text: fmt.pct(S.avertedPct.q05, 0) + ' to ' + fmt.pct(S.avertedPct.q95, 0) })); tr.append(c2);
+    const c2 = el('td', { class: 'num', text: fmt.int(S.averted.median) + ' (' + fmt.pct(S.avertedPct.median, 1) + ')' }); c2.append(el('small', { text: fmt.pct(S.avertedPct.q05, 1) + ' to ' + fmt.pct(S.avertedPct.q95, 1) })); tr.append(c2);
     const c3 = el('td', { class: 'num', text: fmt.int(S.peak.value) }); c3.append(el('small', { text: fmt.ym(S.peak.t) })); tr.append(c3);
     tr.append(el('td', { class: 'num', text: fmt.pct(S.prevEnd, 1) }));
     const c5 = el('td', { class: 'num', text: fmt.money(S.costs.total) }); c5.append(el('small', { text: 'baseline ' + fmt.money(S.bcosts.total) })); tr.append(c5);
