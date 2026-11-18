@@ -1,0 +1,35 @@
+/* Spacing and one-off layout helpers used by index.html.
+   These replace the inline style attributes of the single-file version. An inline style
+   outranks every stylesheet rule, so the helpers carry !important to keep the same result. */
+.u-mt-6 {
+  margin-top: 6px !important;
+}
+.u-mt-8 {
+  margin-top: 8px !important;
+}
+.u-mt-10 {
+  margin-top: 10px !important;
+}
+.u-mt-12 {
+  margin-top: 12px !important;
+}
+.u-mt-14 {
+  margin-top: 14px !important;
+}
+.u-mb-14 {
+  margin-bottom: 14px !important;
+}
+
+/* Scenario title block: takes the free width beside the export buttons. */
+.scn-title {
+  min-width: 0 !important;
+  flex: 1 1 320px !important;
+}
+
+/* Exchange-rate box in the toolbar. */
+.rate-input {
+  width: 90px !important;
+  padding: 3px 6px !important;
+  font-family: var(--mono) !important;
+  font-size: 12px !important;
+}

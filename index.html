@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Explore and compare malaria intervention scenarios using reviewed models."
+    />
+    <meta name="claude:viewport-fit-sides" content="cover" />
+    <title>Malaria Scenario Explorer</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    />
+
+    <!-- Stylesheets: order matters, later files refine earlier ones -->
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/model-layer.css" />
+    <link rel="stylesheet" href="css/polish.css" />
+    <link rel="stylesheet" href="css/utilities.css" />
+  </head>
+  <body>
+    <div class="app" id="app">
+      <!-- Masthead and toolbar: model picker, view switch, currency -->
+      <header class="mast">
+        <div class="title-block">
+          <h1>Malaria Scenario Explorer</h1>
+          <p class="sub" id="mast-sub">
+            Pick a reviewed model, then run and compare intervention scenarios
+            on it.
+          </p>
+        </div>
+      </header>
+      <div class="toolbar">
+        <div class="tb-group">
+          <label for="model-pick" class="tb-label">Model</label>
+          <select id="model-pick" aria-label="Model"></select>
+          <span id="model-badge"></span>
+          <span class="small muted mono" id="model-id"></span>
+          <button type="button" class="btn small" id="btn-model-details">
+            Model details
+          </button>
+          <label class="btn small" id="model-file-label" for="model-file" hidden
+            >Open a model file…
+            <input type="file" id="model-file" accept=".json" hidden
+          /></label>
+        </div>
+        <div class="tb-group">
+          <span class="tb-label">View as</span>
+          <div
+            class="view-switch"
+            role="group"
+            aria-label="Who is using the tool"
+          >
+            <button
+              type="button"
+              id="view-normal"
+              data-view="normal"
+              aria-pressed="true"
+            >
+              Policymaker
+            </button>
+            <button
+              type="button"
+              id="view-researcher"
+              data-view="researcher"
+              aria-pressed="false"
+            >
+              Modeller
+            </button>
+          </div>
+          <span class="view-help" id="view-help"></span>
+        </div>
+        <div class="tb-group currency-row">
+          <label for="currency" class="tb-label">Money in</label>
+          <select id="currency" aria-label="Currency"></select>
+          <span id="rate-row" hidden
+            ><label for="rate" class="small">1 USD =</label>
+            <input
+              type="number"
+              id="rate"
+              min="0"
+              step="0.01"
+              class="rate-input"
+              aria-label="Exchange rate per US dollar"
+          /></span>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <nav class="tabs" role="tablist" aria-label="Sections">
+        <button
+          type="button"
+          role="tab"
+          id="tab-build"
+          aria-selected="true"
+          aria-controls="panel-build"
+        >
+          Scenarios &amp; compare
+        </button>
+        <button
+          type="button"
+          role="tab"
+          id="tab-country"
+          aria-selected="false"
+          aria-controls="panel-country"
+        >
+          Country view
+        </button>
+        <button
+          type="button"
+          role="tab"
+          id="tab-usecase"
+          aria-selected="false"
+          aria-controls="panel-usecase"
+        >
+          Eight-county use case
+        </button>
+        <button
+          type="button"
+          role="tab"
+          id="tab-gbuild"
+          aria-selected="false"
+          aria-controls="panel-gbuild"
+          hidden
+        >
+          Scenarios &amp; compare
+        </button>
+        <button
+          type="button"
+          role="tab"
+          id="tab-settings"
+          aria-selected="false"
+          aria-controls="panel-settings"
+          hidden
+        >
+          Settings view
+        </button>
+        <button
+          type="button"
+          role="tab"
+          id="tab-model"
+          aria-selected="false"
+          aria-controls="panel-model"
+        >
+          Model
+        </button>
+      </nav>
+
+      <!-- Scenarios & compare (CEMA county model) -->
+      <section
+        class="tabpanel"
+        id="panel-build"
+        role="tabpanel"
+        aria-labelledby="tab-build"
+      >
+        <div class="build">
+          <aside class="rail" id="rail">
+            <div class="panel">
+              <div class="panel-head">
+                <h2>Scenario inputs</h2>
+                <span class="state" id="rail-state"></span>
+              </div>
+              <div class="run-row">
+                <button type="button" class="btn primary block" id="btn-run" disabled>
+                  ▶ Run scenario
+                </button>
+              </div>
+              <div class="reset-row">
+                <button type="button" class="linkbtn" id="btn-reset" title="Reset this scenario's choices. The county and other scenarios stay.">
+                  Clear choices
+                </button>
+                <span class="startover" id="startover-slot"></span>
+              </div>
+              <p class="hint u-mt-6" id="run-hint">
+                Choose a county, a net product and the spraying decision.
+              </p>
+              <div class="run-row u-mt-8">
+                <label class="toggle"
+                  ><input type="checkbox" id="live-update" checked />
+                  <span>Update automatically after the first run</span></label
+                >
+              </div>
+            </div>
+            <div id="rail-fields"></div>
+            <div class="panel tier-adv" id="panel-advanced" hidden>
+              <div class="panel-head">
+                <h2>Advanced inputs</h2>
+              </div>
+              <div class="adv-grid" id="adv-fields"></div>
+            </div>
+            <div class="panel" id="panel-varied" hidden>
+              <div class="panel-head">
+                <h2>Varied automatically</h2>
+              </div>
+              <div id="pin-fields"></div>
+            </div>
+          </aside>
+
+          <main class="main" id="main">
+            <div class="scn-strip" id="scn-strip"></div>
+            <div class="scn-head">
+              <div class="scn-title">
+                <input
+                  class="name"
+                  id="scn-name"
+                  type="text"
+                  aria-label="Scenario name"
+                  spellcheck="false"
+                />
+                <div class="scn-id" id="scn-id"></div>
+              </div>
+              <div class="fig-actions">
+                <button type="button" class="btn small" id="btn-export-json">
+                  Export scenario JSON
+                </button>
+                <button type="button" class="btn small" id="btn-export-csv">
+                  Export CSV
+                </button>
+              </div>
+            </div>
+            <div class="chips" id="scn-chips"></div>
+            <p class="headline" id="headline" hidden></p>
+            <div class="note family-note" id="family-note" hidden></div>
+            <div class="stale" id="stale" hidden>
+              Inputs changed since the last run. Press <b>Apply changes</b> to
+              update the results.
+            </div>
+            <div class="kpis" id="kpis"></div>
+            <div id="cmp-wrap"></div>
+            <div id="figures"></div>
+            <!-- "How this run was served" is not shown. The card stays in the page, hidden, because the scripts still write to it. -->
+            <div class="card" id="runs-card" hidden>
+              <h2>How this run was served</h2>
+              <div class="trace" id="trace"></div>
+              <h3 class="u-mt-12">Execution modes used in this session</h3>
+              <div class="modes" id="mode-counts"></div>
+              <div class="u-mt-12" id="router-card">
+                <h3>Model router</h3>
+                <p class="prose small">
+                  Cache first, then the precomputed grid when every input is on
+                  a grid step, then a live run if fast enough, otherwise the
+                  emulator (approximation error shown separately).
+                </p>
+                <h3 class="u-mt-10">
+                  Assumed live run time of the team's model
+                </h3>
+                <div class="radio-row" id="router-speed"></div>
+                <p class="sub small u-mt-6" id="router-note"></p>
+                <h3 class="u-mt-10">Grid steps (precomputed)</h3>
+                <p class="sub small" id="grid-steps"></p>
+              </div>
+              <div id="api-card" hidden>
+                <div id="flowchart"></div>
+                <pre id="api-request"></pre>
+                <pre id="api-response"></pre>
+                <pre id="api-registry"></pre>
+                <pre id="api-locations"></pre>
+                <pre id="api-explain"></pre>
+              </div>
+            </div>
+          </main>
+        </div>
+      </section>
+
+      <!-- Country view -->
+      <section
+        class="tabpanel"
+        id="panel-country"
+        role="tabpanel"
+        aria-labelledby="tab-country"
+        hidden
+      >
+        <div class="card u-mb-14">
+          <h2>One strategy, every modelled county</h2>
+          <p class="prose">
+            The active scenario's strategy applied to all eight modelled
+            counties. Click a county to open it in the builder.
+          </p>
+        </div>
+        <div id="country-root"></div>
+      </section>
+
+      <!-- Eight-county use case -->
+      <section
+        class="tabpanel"
+        id="panel-usecase"
+        role="tabpanel"
+        aria-labelledby="tab-usecase"
+        hidden
+      >
+        <div class="card u-mb-14">
+          <h2>Which net for 2027, and should spraying continue?</h2>
+          <p class="prose">
+            The team's strategy sets, run for each of the eight counties. Each
+            panel shows monthly outpatient-treated cases, then the 2027 to 2032
+            total for each strategy against the baseline.
+          </p>
+        </div>
+        <div class="uc-grid" id="uc-grid"></div>
+      </section>
+
+      <!-- Model details and parameter registry -->
+      <section
+        class="tabpanel"
+        id="panel-model"
+        role="tabpanel"
+        aria-labelledby="tab-model"
+        hidden
+      >
+        <div id="model-gen"></div>
+        <div id="diagram" hidden></div>
+        <div class="card u-mt-14" id="reg-card">
+          <h2>Parameters</h2>
+          <p class="prose" id="reg-intro">
+            What each parameter means, its unit, the value in use, its source
+            and how it enters the model.
+          </p>
+          <div class="reg-tools">
+            <input
+              type="search"
+              id="reg-search"
+              placeholder="Search parameters…"
+              aria-label="Search parameters"
+            />
+            <div class="tf" id="reg-tiers"></div>
+          </div>
+          <div class="reg-wrap"><table class="reg" id="reg-table"></table></div>
+        </div>
+      </section>
+
+      <!-- Scenarios & compare (any other model in the library) -->
+      <section
+        class="tabpanel"
+        id="panel-gbuild"
+        role="tabpanel"
+        aria-labelledby="tab-gbuild"
+        hidden
+      >
+        <div class="build">
+          <aside class="rail">
+            <div class="panel">
+              <div class="panel-head">
+                <h2>Scenario inputs</h2>
+                <span class="state" id="g-scn-state"></span>
+              </div>
+              <div class="run-row">
+                <button type="button" class="btn primary block" id="g-btn-run">
+                  ▶ Run scenario
+                </button>
+              </div>
+              <div class="reset-row">
+                <button type="button" class="linkbtn" id="g-btn-reset" title="Put this scenario's inputs back to the model's defaults. Other scenarios stay.">
+                  Back to baseline
+                </button>
+                <span class="startover" id="g-startover-slot"></span>
+              </div>
+              <div class="run-row u-mt-8">
+                <label class="toggle"
+                  ><input type="checkbox" id="g-live-update" checked />
+                  <span>Update automatically</span></label
+                >
+              </div>
+              <div class="field" id="g-set-field"></div>
+              <div class="field">
+                <div class="lbl">
+                  <span>Simulate until</span
+                  ><span class="val" id="g-horizon-val"></span>
+                </div>
+                <input
+                  type="range"
+                  id="g-horizon"
+                  min="1"
+                  max="15"
+                  step="1"
+                  aria-label="Simulation horizon"
+                />
+              </div>
+            </div>
+            <div class="panel" id="g-panel-levers">
+              <div class="panel-head">
+                <h2>Interventions</h2>
+              </div>
+              <div id="g-lever-fields"></div>
+            </div>
+            <div class="panel" id="g-panel-user" hidden>
+              <div class="panel-head">
+                <h2>Other inputs</h2>
+              </div>
+              <div id="g-user-fields"></div>
+            </div>
+            <div class="panel tier-adv" id="g-panel-advanced" hidden>
+              <div class="panel-head">
+                <h2>Advanced inputs</h2>
+              </div>
+              <div id="g-adv-fields"></div>
+            </div>
+            <div class="panel" id="g-panel-varied" hidden>
+              <div class="panel-head">
+                <h2>Varied automatically</h2>
+              </div>
+              <div id="g-varied-fields"></div>
+            </div>
+          </aside>
+          <main class="main">
+            <div class="scn-strip" id="g-scn-strip"></div>
+            <div class="scn-head">
+              <div class="scn-title">
+                <input
+                  class="name"
+                  id="g-scn-name"
+                  type="text"
+                  aria-label="Scenario name"
+                  spellcheck="false"
+                />
+                <div class="scn-id" id="g-scn-id"></div>
+              </div>
+            </div>
+            <div class="chips" id="g-scn-chips"></div>
+            <p class="headline" id="g-headline" hidden></p>
+            <div class="note family-note" id="g-family-note" hidden></div>
+            <div class="stale" id="g-stale" hidden>
+              Inputs changed since the last run. Press <b>Apply changes</b> to
+              update the results.
+            </div>
+            <div class="kpis" id="g-kpis"></div>
+            <div id="g-cmp-wrap"></div>
+            <div id="g-figures"></div>
+            <!-- "How this run was served" is not shown. The card stays in the page, hidden, because the scripts still write to it. -->
+            <div class="card" id="g-runs-card" hidden>
+              <h2>How this run was served</h2>
+              <p class="prose small" id="g-route-note"></p>
+              <div class="trace u-mt-8" id="g-trace"></div>
+              <h3 class="u-mt-12">Execution modes used in this session</h3>
+              <div class="modes" id="g-mode-counts"></div>
+            </div>
+            <!-- Not shown: assumptions and fixed values are on the Model page. The card stays, hidden, because the scripts still write to it. -->
+            <div class="card" hidden>
+              <h2>Assumptions carried by this model</h2>
+              <ul class="prose" id="g-assumptions"></ul>
+              <h3 class="u-mt-10">Held fixed</h3>
+              <ul class="prose small" id="g-fixed-list"></ul>
+            </div>
+          </main>
+        </div>
+      </section>
+
+      <!-- Settings view (models with several parameter sets) -->
+      <section
+        class="tabpanel"
+        id="panel-settings"
+        role="tabpanel"
+        aria-labelledby="tab-settings"
+        hidden
+      >
+        <div class="card u-mb-14">
+          <h2>One scenario, every declared setting</h2>
+          <div id="g-settings-root"></div>
+        </div>
+      </section>
+
+      <div id="foot-versions" hidden></div>
+    </div>
+
+    <!-- Scripts: plain (non-module) files that share one global scope. Keep this order. -->
+    <!-- Stand-in engine for the CEMA county model -->
+    <script src="js/engine/county-engine.js"></script>
+
+    <!-- Explorer: configuration and data -->
+    <script src="js/app/config.js"></script>
+    <script src="js/data/kenya-county-map.js"></script>
+
+    <!-- Explorer: application -->
+    <script src="js/app/utils.js"></script>
+    <script src="js/app/state.js"></script>
+    <script src="js/app/scenario-service.js"></script>
+    <script src="js/app/charts.js"></script>
+    <script src="js/app/figure-definitions.js"></script>
+    <script src="js/app/rail.js"></script>
+    <script src="js/app/scenario-views.js"></script>
+    <script src="js/app/figures.js"></script>
+    <script src="js/app/explainer.js"></script>
+    <script src="js/app/export.js"></script>
+    <script src="js/app/country-view.js"></script>
+    <script src="js/app/ask-chart.js"></script>
+    <script src="js/app/model-tab.js"></script>
+    <script src="js/app/runs-tab.js"></script>
+    <script src="js/app/use-case.js"></script>
+    <script src="js/app/currency.js"></script>
+    <script src="js/app/main.js"></script>
+
+    <!-- Colour palettes -->
+    <script src="js/app/palettes.js"></script>
+
+    <!-- Model layer: spec engine, model packages, model-service API -->
+    <script src="js/models/model-engine.js"></script>
+    <script src="js/models/library/cema-county.js"></script>
+    <script src="js/models/library/seirs-treatment.js"></script>
+    <script src="js/models/library/sir.js"></script>
+    <script src="js/models/model-api.js"></script>
+
+    <!-- Model picker and the generic explorer (must load last) -->
+    <script src="js/app/model-layer.js"></script>
+  </body>
+</html>
