@@ -1,5 +1,5 @@
 let downloadsFn = null;
-async function initDownloads() { try { if (window.claude && typeof window.claude.use === 'function') downloadsFn = await window.claude.use('downloads'); } catch (e) { downloadsFn = null; } }
+async function initDownloads() { try { if (window.appHost && typeof window.appHost.use === 'function') downloadsFn = await window.appHost.use('downloads'); } catch (e) { downloadsFn = null; } }
 async function saveFile(filename, data, mime) {
   if (downloadsFn) { try { await downloadsFn.save({ filename, data }); return; } catch (e) { if (e && e.code === 'cancelled') return; } }
   try { const blob = data instanceof Blob ? data : new Blob([data], { type: mime || 'application/octet-stream' }); const url = URL.createObjectURL(blob); const a = el('a', { href: url, download: filename }); document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000); } catch (e) { console.warn('download failed', e); }

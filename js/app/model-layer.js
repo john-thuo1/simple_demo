@@ -355,7 +355,7 @@ const EXT = window.EXT = {};
     },
   };
 
-  /* ---------- explainer (override): same live Claude path, plus the classifier before and after ---------- */
+  /* ---------- explainer (override): same live path, plus the classifier before and after ---------- */
   window.buildExplainer = function (F, ctx) {
     const box = el('div', { class: 'explain', hidden: '' });
     const qrow = el('div', { class: 'q-row' }); qrow.append(el('span', { class: 'lead', text: 'Ask about "' + F.title + '"' }));

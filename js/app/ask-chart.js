@@ -18,7 +18,7 @@ state.asked = []; state.askedSeq = 0;
 const NOT_IN_MODEL = [['death', 'deaths', 'mortality', 'die', 'dalys', 'daly'], ['resistance', 'insecticide resistance'], ['age', 'children', 'under-five', 'under five', 'adults'], ['rainfall', 'temperature', 'climate', 'weather'], ['anaemia', 'anemia', 'hospitalisation', 'hospitalization', 'admissions'], ['mosquito density', 'mosquitoes', 'vector density']];
 const NOT_IN_MODEL_WHY = ['The model has no mortality: deaths and DALYs are not among its outputs.', 'Insecticide resistance is not a variable. It is implied by each product\'s efficacy curve.', 'The model is not age-structured beyond the vaccinated under-five class, so age breakdowns are not available.', 'Climate enters only through the fitted seasonal curve seas(t). There is no rainfall or temperature input.', 'Admissions and anaemia are not modelled. Severe episodes (I_sev) are the closest output.', 'The mosquito population is at equilibrium. Only the human-side force of infection is simulated.'];
 
-/** Rule-based composer (used when Claude is not available). Returns a spec or {error}. */
+/** Rule-based composer (used when no language model is connected). Returns a spec or {error}. */
 function parseQuestion(q) {
   const t = ' ' + q.toLowerCase().replace(/(\d),(\d{3})/g, '$1$2').replace(/[?!.,;:]/g, ' ').replace(/\s+/g, ' ') + ' ';
   for (let k = 0; k < NOT_IN_MODEL.length; k++) if (NOT_IN_MODEL[k].some(w => t.includes(' ' + w + ' ') || t.includes(' ' + w + 's '))) return { error: NOT_IN_MODEL_WHY[k] };
@@ -96,7 +96,7 @@ function parseWhatIf(t, spec) {
   const any = Object.keys(base).length || variants.length || countyId || Object.keys(adv).length;
   return { any, base, variants, countyId, adv, found, advFound };
 }
-function sanitizeOverrides(o) { // whitelist and clamp what a composer (rules or Claude) may set
+function sanitizeOverrides(o) { // whitelist and clamp what a composer (rules or a language model) may set
   const out = {}; if (!o || typeof o !== 'object') return out;
   if (o.product && E.PRODUCTS[o.product] && !E.PRODUCTS[o.product].hidden) out.product = o.product;
   for (const k of ['access', 'usage', 'irsCoverage', 'pt', 'cv']) if (o[k] != null && isFinite(+o[k])) out[k] = Math.max(0, Math.min(1, +o[k] > 1 ? +o[k] / 100 : +o[k]));

@@ -2,7 +2,7 @@ let sampleFn = null, sampleState = 'pending';
 function explainerAvailable() { return !!sampleFn; }
 async function initSample() {
   try {
-    if (typeof window.claude === 'object' && window.claude && typeof window.claude.use === 'function') { sampleFn = await window.claude.use('sample'); }
+    if (typeof window.appHost === 'object' && window.appHost && typeof window.appHost.use === 'function') { sampleFn = await window.appHost.use('sample'); }
   } catch (e) { sampleFn = null; }
   sampleState = sampleFn ? 'ready' : 'absent';
   $$('.explain .status .avail').forEach(x => { x.textContent = sampleFn ? '' : ''; });
