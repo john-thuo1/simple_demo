@@ -1194,3 +1194,15 @@ td small,
     margin: -1px -1px 0;
   }
 }
+
+/* result cards: four aligned rows in every card */
+.kpi .label {
+  line-height: 1.35;
+  min-height: 2.7em; /* room for two lines, so the numbers sit on one level across cards */
+}
+.kpi .range,
+.kpi .delta {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

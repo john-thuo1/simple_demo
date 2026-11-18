@@ -194,7 +194,7 @@ function tornado(container, spec) {
     for (const [v, lbl] of [[r.low, r.lowLbl], [r.high, r.highLbl]]) {
       const x1 = Math.min(sx(0), sx(v)), w = Math.abs(sx(v) - sx(0));
       root.append(svg('rect', { x: x1, y, width: Math.max(w, 0.5), height: h, rx: 2, style: 'fill:' + (v < 0 ? 'var(--s3)' : 'var(--s2)') + ';fill-opacity:.85' }));
-      root.append(svg('text', { x: v < 0 ? sx(v) - 4 : sx(v) + 4, y: y + h / 2 + 4, 'text-anchor': v < 0 ? 'end' : 'start', style: 'fill:var(--muted);font-size:10px' }, lbl + ' ' + fmt.signedPct(v)));
+      root.append(svg('text', { x: v < 0 ? sx(v) - 4 : sx(v) + 4, y: y + h / 2 + 4, 'text-anchor': v < 0 ? 'end' : 'start', style: 'fill:var(--muted);font-size:10px' }, lbl + ' ' + fmt.signedPct(v, 1)));
     }
   });
   container.append(root);
