@@ -1206,3 +1206,14 @@ td small,
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* Inputs panel: section headings stand out from the fields below them */
+:root { --rail-head: #c2410c; --rail-head-bar: #f97316; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --rail-head: #fdba74; --rail-head-bar: #fb923c; } }
+:root[data-theme="dark"] { --rail-head: #fdba74; --rail-head-bar: #fb923c; }
+.rail .panel-head h2 {
+  color: var(--rail-head);
+  border-left: 3px solid var(--rail-head-bar);
+  padding-left: 8px;
+  line-height: 1.25;
+}
