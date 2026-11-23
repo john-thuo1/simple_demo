@@ -843,7 +843,7 @@ const EXT = window.EXT = {};
     const st = document.createElement('style'); st.textContent = window.MSE_PALETTE_CSS(); document.head.appendChild(st);
     document.documentElement.setAttribute('data-palette', 'ramp');
     const sel = $('#model-pick'); renderPicker();
-    sel.addEventListener('change', () => { const v = sel.value; if (v === '__chooser') { EXT.deselect(); return; } if (v === '__dsl') { renderPicker(); if (MSE.DSL_URL) window.location.href = MSE.DSL_URL; else alertNote('The model builder is not connected yet.'); return; } if (v === '__open') { renderPicker(); $('#model-file').click(); return; } const parts = v.split('|'); EXT.cluster = parts[1] || null;
+    sel.addEventListener('change', () => { const v = sel.value; if (v === '__chooser') { EXT.deselect(); return; } if (v === '__dsl') { renderPicker(); if (MSE.DSL_URL) window.location.href = MSE.DSL_URL; else alertNote('The DSL GUI is not connected yet.'); return; } if (v === '__open') { renderPicker(); $('#model-file').click(); return; } const parts = v.split('|'); EXT.cluster = parts[1] || null;
       // same model picked from another cluster: keep the scenarios, change only what describes the cluster
       if (EXT.current && EXT.current.key === parts[0]) { renderPicker(); renderBadge(); renderFamilyNotes(); if (state.tab === 'model') renderModelTab(); return; }
       EXT.select(parts[0]); });
