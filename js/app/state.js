@@ -1,5 +1,5 @@
 const state = MSE.state = {
-  view: 'normal', scenarios: [], activeId: 'A', live: true, dirty: false,
+  view: MSE.SINGLE_VIEW ? 'researcher' : 'normal', scenarios: [], activeId: 'A', live: true, dirty: false,
   bands: { b50: true, b90: true }, showBaseline: true,
   routerAssumedMs: 400, routerThresholdMs: 2000,
   results: new Map(), baseCache: new Map(), modeCounts: { cache: 0, grid: 0, live: 0, emulator: 0 }, lastTrace: [],

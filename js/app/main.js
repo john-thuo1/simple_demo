@@ -1,4 +1,5 @@
 function applyView() {
+  document.documentElement.classList.toggle('single-view', !!MSE.SINGLE_VIEW); $$('details.more').forEach(d => { if (!MSE.SINGLE_VIEW) d.open = true; });
   $$('.view-switch button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === state.view)));
   $('#view-help').textContent = MSE.VIEW_HELP[state.view];
   $('#panel-advanced').hidden = state.view !== 'researcher'; $('#panel-varied').hidden = state.view !== 'researcher';

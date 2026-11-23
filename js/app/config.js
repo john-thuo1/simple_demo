@@ -138,6 +138,10 @@ MSE.FIG_GROUPS = [
    The Policymaker sees every reviewed model but not "Open a model file". false: the previous behaviour, the CEMA county
    model is preselected. This one switch turns the whole feature on or off. */
 MSE.START_WITH_CHOOSER = true;
+/* One view (23 Nov 2026). true: there is no Policymaker / Modeller switch. Everyone sees every input, chart and model
+   detail, and the advanced and varied inputs sit under "More controls", closed until opened. false: the two views and
+   the switch come back as before. This one switch turns the whole feature on or off. */
+MSE.SINGLE_VIEW = true;
 MSE.VIEW_HELP = {
   normal: '',
   student: 'User-facing inputs plus the model, equations and full registry to learn from.',

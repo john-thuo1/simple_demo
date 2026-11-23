@@ -49,7 +49,7 @@
             <input type="file" id="model-file" accept=".json" hidden
           /></label>
         </div>
-        <div class="tb-group">
+        <div class="tb-group" id="view-group">
           <span class="tb-label">View as</span>
           <div
             class="view-switch"
@@ -187,6 +187,8 @@
               </div>
             </div>
             <div id="rail-fields"></div>
+            <details class="more">
+              <summary>More controls</summary>
             <div class="panel tier-adv" id="panel-advanced" hidden>
               <div class="panel-head">
                 <h2>Advanced inputs</h2>
@@ -199,6 +201,7 @@
               </div>
               <div id="pin-fields"></div>
             </div>
+            </details>
           </aside>
 
           <main class="main" id="main">
@@ -393,6 +396,8 @@
               </div>
               <div id="g-user-fields"></div>
             </div>
+            <details class="more">
+              <summary>More controls</summary>
             <div class="panel tier-adv" id="g-panel-advanced" hidden>
               <div class="panel-head">
                 <h2>Advanced inputs</h2>
@@ -405,6 +410,7 @@
               </div>
               <div id="g-varied-fields"></div>
             </div>
+            </details>
           </aside>
           <main class="main">
             <div class="scn-strip" id="g-scn-strip"></div>
