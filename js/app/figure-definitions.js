@@ -35,7 +35,7 @@ function asideBlock(ctx, extra) {
     // later charts do not repeat what is varied: it is listed once, on the first chart, for the Modeller
   } else {
     // the scenario's own settings are not repeated here: they are the chips at the top of the scenario (18 Nov 2026)
-    if (extra.varied !== false && ctx.view !== 'normal') { a.append(el('h3', { text: 'Varied automatically · shown in bands' })); const d3 = el('dl'); for (const [k, v] of variedList(ctx)) d3.append(el('dt', { text: k }), el('dd', { text: v })); a.append(d3); }
+    if (extra.varied !== false && ctx.view !== 'normal') { a.append(el('h3', { text: 'Varied inputs · shown in bands' })); const d3 = el('dl'); for (const [k, v] of variedList(ctx)) d3.append(el('dt', { text: k }), el('dd', { text: v })); a.append(d3); }
   }
   return a;
 }
@@ -51,7 +51,7 @@ function baseContext(ctx, chartTitle, measures) {
   lines.push('Scenario ' + ctx.s.id + ' "' + scenarioName(ctx.s) + '": ' + setList(ctx).map(x => x[0] + ' = ' + x[1]).join(' · ') + '.');
   lines.push('Baseline for comparison: PBO nets at current county coverage (access ' + fmt.pct(c.access) + ', usage ' + fmt.pct(c.usage) + '), campaigns from 2027 every 3 years, ' + (c.irsHistory ? 'IRS stopped after 2026' : 'no IRS') + ', treatment ' + fmt.pct(c.pt) + ', vaccination ' + fmt.pct(c.cv) + '.');
   const adv = advList(ctx); lines.push('Advanced overrides: ' + (adv.length ? adv.map(x => x[0] + ' = ' + x[1]).join(' · ') : 'none (fitted values)') + '.');
-  lines.push('Varied automatically (source of the bands, ' + MSE.N_DRAWS + ' stratified draws): ' + variedList(ctx).map(x => x[0] + ' ' + x[1]).join(' · ') + '.');
+  lines.push('Varied inputs (source of the bands, ' + MSE.N_DRAWS + ' stratified draws): ' + variedList(ctx).map(x => x[0] + ' ' + x[1]).join(' · ') + '.');
   lines.push('Computed for 2027–' + h + ': outpatient-treated cases median ' + fmt.int(S.cases.median) + ' (90% range ' + fmt.int(S.cases.q05) + '–' + fmt.int(S.cases.q95) + '). Baseline median ' + fmt.int(S.baseCases.median) + '. Cases averted vs baseline median ' + fmt.int(S.averted.median) + ' (' + fmt.pct(S.avertedPct.median, 1) + '. 90% range ' + fmt.pct(S.avertedPct.q05, 1) + ' to ' + fmt.pct(S.avertedPct.q95, 1) + '). Severe episodes median ' + fmt.int(S.severe.median) + '. Peak month ' + fmt.ym(S.peak.t) + ' at ' + fmt.int(S.peak.value) + ' cases. Mean share infected in ' + h + ': ' + fmt.pct(S.prevEnd, 1) + ' (baseline ' + fmt.pct(S.bprevEnd, 1) + ').');
   lines.push('Execution: mode ' + r.execution.mode + (r.execution.mode === 'emulator' ? ' (approximation error ±5%, reported separately from model uncertainty)' : '') + '. Model ' + E.MODEL_VERSION + '.');
   lines.push('Assumptions and limits: deterministic extended SEIR at county level. Seasonal force of infection seas(t) = 1 + αβ·cos(2π(t−φ)). Mosquito population at equilibrium. No superinfection. Closed population. Vaccinated children partially protected (ε). Temporary immunity after recovery (ρ). Vector control enters as λ × (1 − E_net·access·usage) × (1 − E_IRS·coverage) with product-specific net decay that resets at each campaign and IRS decaying within a year. Costs are illustrative unit costs.');

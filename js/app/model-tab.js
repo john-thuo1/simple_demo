@@ -55,7 +55,7 @@ function renderRegistry() {
   const ctx = safeCtx(); const q = ($('#reg-search').value || '').toLowerCase();
   const tiersAllowed = state.view === 'normal' ? ['user', 'varied', 'fixed'] : ['user', 'advanced', 'varied', 'fixed'];
   const tf = $('#reg-tiers'); tf.innerHTML = '';
-  for (const [k, lbl] of [['all', 'All'], ['user', 'User-facing'], ['advanced', 'Advanced'], ['varied', 'Varied automatically'], ['fixed', 'Fixed']]) { if (k !== 'all' && !tiersAllowed.includes(k)) continue; const b = el('button', { type: 'button', text: lbl, 'aria-pressed': String(regTier === k) }); b.addEventListener('click', () => { regTier = k; renderRegistry(); }); tf.append(b); }
+  for (const [k, lbl] of [['all', 'All'], ['user', 'User-facing'], ['advanced', 'Advanced'], ['varied', 'Varied inputs'], ['fixed', 'Fixed']]) { if (k !== 'all' && !tiersAllowed.includes(k)) continue; const b = el('button', { type: 'button', text: lbl, 'aria-pressed': String(regTier === k) }); b.addEventListener('click', () => { regTier = k; renderRegistry(); }); tf.append(b); }
   const where = ctx.county ? ctx.county.name : 'the county you choose'; const pend = ctx.partial ? ' Values marked — appear once a county is chosen and a scenario has run.' : '';
   $('#reg-intro').textContent = (state.view === 'normal' ? 'What each input means, the value in use for ' + where + ', where it comes from, and which parameters the tool varies or holds fixed on your behalf.' : 'Every parameter with the value in use for ' + where + '.') + pend;
   const t = $('#reg-table'); t.innerHTML = '';
