@@ -820,12 +820,15 @@ pre.json {
   box-shadow: 0 8px 24px rgba(20, 26, 23, 0.14);
   overflow: hidden;
 }
+.mmenu-list:focus {
+  outline: none;
+}
 .mmenu-list[hidden] {
   display: none;
 }
 .mmenu-body {
   padding: 6px;
-  max-height: 50vh;
+  max-height: 64vh;
   overflow: auto;
 }
 .mmenu-head {

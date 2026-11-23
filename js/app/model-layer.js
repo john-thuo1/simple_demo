@@ -100,13 +100,13 @@ const EXT = window.EXT = {};
     const curLabel = cur && cur.parentNode.label ? cur.parentNode.label : (sel.querySelector('optgroup') || {}).label || '';
     const items = [];
     const close = focus => { list.hidden = true; btn.setAttribute('aria-expanded', 'false'); if (focus) btn.focus(); };
-    const open = () => { list.hidden = false; btn.setAttribute('aria-expanded', 'true'); show(curLabel); (items.find(i => i.getAttribute('aria-selected') === 'true') || items[0]).focus(); };
+    const open = keys => { list.hidden = false; btn.setAttribute('aria-expanded', 'true'); show(curLabel); const on = items.find(i => i.getAttribute('aria-selected') === 'true') || (keys ? items[0] : null); if (on) on.focus(); else { list.tabIndex = -1; list.focus(); } }; // with the mouse and no model chosen, nothing is highlighted until the pointer is over it
     for (const g of sel.querySelectorAll('optgroup')) {
       const grp = el('div', { class: 'mmenu-group', role: 'group', 'aria-label': g.label });
       grp.append(el('div', { class: 'mmenu-head', text: g.label }));
       for (const o of g.children) {
         const it = el('button', { type: 'button', class: 'mmenu-item', role: 'option', 'aria-selected': String(o === cur), text: o.text });
-        it.addEventListener('focus', () => show(g.label));
+        it.addEventListener('focus', () => show(g.label)); it.addEventListener('mousemove', () => { if (document.activeElement !== it) it.focus({ preventScroll: true }); }); // one highlight, and it follows the pointer
         it.addEventListener('click', () => { close(true); sel.value = o.value; sel.dispatchEvent(new Event('change')); });
         grp.append(it); items.push(it);
       }
@@ -115,8 +115,8 @@ const EXT = window.EXT = {};
     }
     body.addEventListener('mouseleave', () => show((document.activeElement && document.activeElement.closest && document.activeElement.closest('.mmenu-group') || { getAttribute: () => curLabel }).getAttribute('aria-label')));
     list.append(body, desc); wrap.append(btn, list);
-    btn.addEventListener('click', () => { if (list.hidden) open(); else close(false); });
-    btn.addEventListener('keydown', ev => { if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') { ev.preventDefault(); if (list.hidden) open(); } });
+    btn.addEventListener('click', ev => { if (list.hidden) open(ev.detail === 0); else close(false); });
+    btn.addEventListener('keydown', ev => { if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') { ev.preventDefault(); if (list.hidden) open(true); } });
     list.addEventListener('keydown', ev => {
       const i = items.indexOf(document.activeElement);
       if (ev.key === 'Escape') { ev.preventDefault(); close(true); }
