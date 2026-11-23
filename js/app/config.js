@@ -142,6 +142,9 @@ MSE.START_WITH_CHOOSER = true;
    detail, and the advanced and varied inputs sit under "More controls", closed until opened. false: the two views and
    the switch come back as before. This one switch turns the whole feature on or off. */
 MSE.SINGLE_VIEW = true;
+/* Where "Build a model…" in the model list goes: the address of the DSL's model builder. Empty until the builder is
+   running. While it is empty the entry shows a short note and stays on this page. */
+MSE.DSL_URL = '';
 MSE.VIEW_HELP = {
   normal: '',
   student: 'User-facing inputs plus the model, equations and full registry to learn from.',

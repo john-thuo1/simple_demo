@@ -76,7 +76,7 @@ const EXT = window.EXT = {};
       // Modeller library: the same clusters as the Policymaker shelf, then custom models and file import
       FAMILIES.forEach(f => { const ms = lib.filter(m => clustersOf(m).includes(f)); if (!ms.length) return; const g = el('optgroup', { label: f.name }); ms.forEach(m => g.append(el('option', { value: m.key + '|' + f.id, text: m.name }))); sel.append(g); });
       const customs = EXT.models.filter(m => m.custom); if (customs.length) { const g2 = el('optgroup', { label: 'Custom (this session)' }); customs.forEach(m => g2.append(el('option', { value: m.key, text: m.name + ' · ' + m.pkg.model_id + (m.same_structure_as ? ' · same structure as a library model' : '') }))); sel.append(g2); }
-      const g3 = el('optgroup', { label: 'More' }); if (CHOOSER()) g3.append(el('option', { value: '__chooser', text: 'All models…' })); g3.append(el('option', { value: '__open', text: 'Open a model file…' })); sel.append(g3);
+      const g3 = el('optgroup', { label: 'More' }); if (CHOOSER()) g3.append(el('option', { value: '__chooser', text: 'All models…' })); g3.append(el('option', { value: '__dsl', text: 'Build a model…' })); g3.append(el('option', { value: '__open', text: 'Open a model file…' })); sel.append(g3);
     }
     if (EXT.current) sel.value = EXT.current.custom ? EXT.current.key : EXT.current.key + '|' + famOf(EXT.current).id;
     renderMenu();
@@ -95,7 +95,7 @@ const EXT = window.EXT = {};
     const btn = el('button', { type: 'button', class: 'mmenu-btn', id: 'model-menu-btn', 'aria-haspopup': 'listbox', 'aria-expanded': 'false', 'aria-label': 'Model', text: cur ? cur.text : 'Choose a model' });
     const list = el('div', { class: 'mmenu-list', role: 'listbox', 'aria-label': 'Model library', hidden: '' });
     const body = el('div', { class: 'mmenu-body' }); const desc = el('div', { class: 'mmenu-desc', 'aria-live': 'polite' });
-    const descOf = label => { const f = FAMILIES.find(x => x.name === label); if (f) return [f.name, f.description]; if (label.startsWith('Custom')) return ['Custom models', 'Imported in this session from a package file. Unreviewed, never added to the library, live runs only.']; return CHOOSER() ? ['More', state.view === 'normal' ? 'Go back to the list of models.' : 'Go back to the list of models, or import a compiled model package (.json).'] : ['Open a model file', 'Import a compiled model package (.json). It is listed as custom and unreviewed.']; };
+    const descOf = label => { const f = FAMILIES.find(x => x.name === label); if (f) return [f.name, f.description]; if (label.startsWith('Custom')) return ['Custom models', 'Imported in this session from a package file. Unreviewed, never added to the library, live runs only.']; return CHOOSER() ? ['More', state.view === 'normal' ? 'Go back to the list of models.' : 'Go back to the list of models, build a model, or import a compiled model package (.json).'] : ['Open a model file', 'Import a compiled model package (.json). It is listed as custom and unreviewed.']; };
     const show = label => { const d = descOf(label); desc.innerHTML = ''; desc.append(el('b', { text: d[0] + '. ' }), d[1]); };
     const curLabel = cur && cur.parentNode.label ? cur.parentNode.label : (sel.querySelector('optgroup') || {}).label || '';
     const items = [];
@@ -843,7 +843,7 @@ const EXT = window.EXT = {};
     const st = document.createElement('style'); st.textContent = window.MSE_PALETTE_CSS(); document.head.appendChild(st);
     document.documentElement.setAttribute('data-palette', 'ramp');
     const sel = $('#model-pick'); renderPicker();
-    sel.addEventListener('change', () => { const v = sel.value; if (v === '__chooser') { EXT.deselect(); return; } if (v === '__open') { renderPicker(); $('#model-file').click(); return; } const parts = v.split('|'); EXT.cluster = parts[1] || null;
+    sel.addEventListener('change', () => { const v = sel.value; if (v === '__chooser') { EXT.deselect(); return; } if (v === '__dsl') { renderPicker(); if (MSE.DSL_URL) window.location.href = MSE.DSL_URL; else alertNote('The model builder is not connected yet.'); return; } if (v === '__open') { renderPicker(); $('#model-file').click(); return; } const parts = v.split('|'); EXT.cluster = parts[1] || null;
       // same model picked from another cluster: keep the scenarios, change only what describes the cluster
       if (EXT.current && EXT.current.key === parts[0]) { renderPicker(); renderBadge(); renderFamilyNotes(); if (state.tab === 'model') renderModelTab(); return; }
       EXT.select(parts[0]); });
